@@ -1,12 +1,7 @@
-name             'gitlab'
-maintainer       'CeSPI - UNLP'
-maintainer_email 'car@cespi.unlp.edu.ar'
-license          'MIT'
-description      'Installs/Configures gitlab'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '0.1.0'
-
-depends          'apt', "~> 1.10.0"
-depends          'mysql', "~> 3.0.4"
-depends          'database', "~> 1.4.0"
-depends          'rvm', "~> 0.9.0"
+%w{ git redisio build-essential python readline openssl openssh perl xml zlib rbenv }.each do |cb_depend|
+  depends cb_depend
+end
+%w{ debian ubuntu }.each do |os|
+  supports os
+end
