@@ -24,6 +24,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 #
+
 include_recipe "gitlab::_reqs"
 include_recipe "gitlab::_shell"
 include_recipe "gitlab::_ruby"

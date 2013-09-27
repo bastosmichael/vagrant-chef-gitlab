@@ -1,9 +1,10 @@
+include_recipe "mysql::server"
 include_recipe "database::mysql"
 
 connection = {
-  host: node.gitlab.database.host,
-  username: (node.gitlab.database.superuser.user || 'root'),
-  password: (node.gitlab.database.superuser.password ||  node.mysql.server_root_password)
+  :host => node.gitlab.database.host,
+  :username => (node.gitlab.database.superuser.user || 'root'),
+  :password => (node.gitlab.database.superuser.password ||  node.mysql.server_root_password)
 }
 
 

@@ -10,7 +10,7 @@ user node.gitlab.user do
   comment "Gitlab user"
   gid node.gitlab.user
   home node.gitlab.home
-  supports(manage_home: true)
+  supports(:manage_home => true)
   shell '/bin/bash'
 end
 

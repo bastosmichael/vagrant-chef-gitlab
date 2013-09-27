@@ -1,76 +1,37 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+
 Vagrant.configure("2") do |config|
-  # All Vagrant configuration is done here. The most common configuration
-  # options are documented and commented below. For a complete reference,
-  # please see the online documentation at vagrantup.com.
+  config.vm.box = "precise64"
+  #config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 
-  config.vm.hostname = "gitlab-berkshelf"
-
-  # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "ubuntu-12.04.2-cespi-amd64"
-
-  # The url from where the 'config.vm.box' box will be fetched if it
-  # doesn't already exist on the user's system.
-  config.vm.box_url = "http://vagrantbox.desarrollo.cespi.unlp.edu.ar/pub/ubuntu-12.04.2-cespi-amd64.box"
-
-  # Assign this VM to a host-only network IP, allowing you to access it
-  # via the IP. Host-only networks can talk to the host machine as well as
-  # any other machines on the same network, but cannot be accessed (through this
-  # network interface) by any external networks.
-  config.vm.network :private_network, ip: "33.33.33.10"
-
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-
-  # config.vm.network :public_network
-
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
-
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  config.vm.provider :virtualbox do |vb|
-  #   # Don't boot with headless mode
-  #   vb.gui = true
-  #
-  #   # Use VBoxManage to customize the VM. For example to change memory:
-    vb.customize ["modifyvm", :id, "--memory", "1024"]
+  config.vm.provider :aws do |aws, override|
+    aws.access_key_id = "YOUR KEY"
+    aws.secret_access_key = "YOUR SECRET KEY"
+    aws.keypair_name = "KEYPAIR NAME"
+    override.ssh.private_key_path = "PATH TO YOUR PRIVATE KEY"
+    override.ssh.username = "ubuntu"
+    aws.ami = "ami-a1fd74c8"
+    aws.instance_type = "m1.small"
   end
-  #
-  # View the documentation for the provider you're using for more
-  # information on available options.
 
-  config.ssh.max_tries = 40
-  config.ssh.timeout   = 120
+  config.vm.provider :rackspace do |rs|
+    rs.username = "YOUR USERNAME"
+    rs.api_key  = "YOUR API KEY"
+    rs.flavor   = /512MB/
+    rs.image    = /Ubuntu/
+  end
 
-  # The path to the Berksfile to use with Vagrant Berkshelf
-  # config.berkshelf.berksfile_path = "./Berksfile"
+  # Port 8000 on the host will go to port 80 on the Vagrant box
+  config.vm.network :forwarded_port, guest: 80, host: 8000, auto_correct: true
 
-  # Enabling the Berkshelf plugin. To enable this globally, add this configuration
-  # option to your ~/.vagrant.d/Vagrantfile file
-  config.berkshelf.enabled = true
-
-  # An array of symbols representing groups of cookbook described in the Vagrantfile
-  # to exclusively install and copy to Vagrant's shelf.
-  # config.berkshelf.only = []
-
-  # An array of symbols representing groups of cookbook described in the Vagrantfile
-  # to skip installing and copying to Vagrant's shelf.
-  # config.berkshelf.except = []
+  # Here's a folder for passing stuff back and forth
+  config.vm.synced_folder "./shared", "/home/vagrant/host_shared"
 
   config.vm.provision :chef_solo do |chef|
+    chef.cookbooks_path = ["cookbook"]
+    chef.add_recipe "gitlab"
     chef.json = {
       :mysql => {
         :server_root_password => 'rootpass',
@@ -92,12 +53,6 @@ Vagrant.configure("2") do |config|
 #          }
 #        }
 #      }
-    }
-
-    chef.run_list = [
-        "recipe[apt::default]",
-        "recipe[mysql::server]",
-        "recipe[gitlab::default]"
-    ]
+      }
   end
 end

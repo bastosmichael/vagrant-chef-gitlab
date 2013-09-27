@@ -22,11 +22,11 @@ default[:gitlab][:mail_from] = "gitlab@localhost"
 default[:gitlab][:support_email] = "support@localhost"
 default[:gitlab][:default_projects_limit] = 10
 default[:gitlab][:default_projects_features] = {
-      issues: true,
-      merge_requests: true,
-      wiki: true,
-      wall: false,
-      snippets: false
+      :issues => true,
+      :merge_requests => true,
+      :wiki => true,
+      :wall => false,
+      :snippets => false
 }
 
 default[:gitlab][:omniauth][:enabled] = false
